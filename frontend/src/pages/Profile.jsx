@@ -226,14 +226,15 @@ const deleteProject = async (id) => {
         category: editingPost.category,
         tags: editingPost.tags,
       };
-const res = await fetch(`${baseURL}/forum/${id}`, {
+
+
+const res = await fetch(`${baseURL}/api/forum/${id}`, {
   method: "PUT",
-  headers: {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
-  },
+  headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
   body: JSON.stringify(payload),
 });
+
+
 
 
       if (!res.ok) {

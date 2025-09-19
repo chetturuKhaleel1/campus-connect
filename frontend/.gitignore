@@ -1,0 +1,33 @@
+# dependencies
+/node_modules
+
+# production build
+/dist
+/build
+
+# misc system files
+.DS_Store
+Thumbs.db
+
+# local env files (keep secrets out of GitHub)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# editor settings
+.vscode/
+.idea/
+.lh/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*

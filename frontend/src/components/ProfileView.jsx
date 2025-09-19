@@ -15,9 +15,11 @@ export default function ProfileView() {
     const fetchProfileData = async () => {
       setIsLoading(true);
       try {
-        const res = await axios.get(
-          `http://localhost:5000/api/profile/${role}/${id}`
-        );
+
+       const res = await axios.get(
+  `${process.env.VITE_API_URL}/api/profile/${role}/${id}`
+);
+
         setProfileData(res.data);
       } catch (err) {
         console.error("Error fetching profile data:", err);

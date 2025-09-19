@@ -28,11 +28,14 @@ export default function CreateProject() {
 
     try {
       const token = localStorage.getItem("token");
-      await axios.post(
-        "/api/projects",
-        { ...formData, category: "Projects" },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+
+     await axios.post(
+  `${import.meta.env.VITE_API_URL}/api/projects`,
+  { ...formData, category: "Projects" },
+  { headers: { Authorization: `Bearer ${token}` } }
+);
+
+
       setMessage("Project created successfully!");
       setFormData({
         title: "",

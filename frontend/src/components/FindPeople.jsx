@@ -40,11 +40,13 @@ export default function FindPeople() {
       if (selectedArea === "Other") {
         selectedArea = formData.customArea;
       }
-
-      const r = await axios.post("http://localhost:5000/api/find_people", {
-        people: formData.people,
-        area: selectedArea,
-      });
+const r = await axios.post(
+  `${import.meta.env.VITE_API_URL}/find_people`,
+  {
+    people: formData.people,
+    area: selectedArea,
+  }
+);
 
       setResponse(r.data);
       setIsLoading(false);

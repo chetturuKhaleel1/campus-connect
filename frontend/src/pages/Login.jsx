@@ -3,7 +3,7 @@ import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { jwtDecode } from "jwt-decode";
-
+const baseURL = import.meta.env.VITE_API_URL;
 const Login = () => {
   const { setUser } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -21,11 +21,11 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      const res = await fetch(`${baseURL}/api/login`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(formData),
+});
 
       const data = await res.json();
 
@@ -33,9 +33,9 @@ const Login = () => {
         localStorage.setItem("token", data.token);
         const decoded = jwtDecode(data.token);
 
-        const profileRes = await fetch("http://localhost:5000/api/profile/me", {
-          headers: { Authorization: `Bearer ${data.token}` },
-        });
+       const profileRes = await fetch(`${baseURL}/api/profile/me`, {
+  headers: { Authorization: `Bearer ${data.token}` },
+});
 
         const profileData = await profileRes.json();
         if (profileRes.ok) setUser(profileData.profile);

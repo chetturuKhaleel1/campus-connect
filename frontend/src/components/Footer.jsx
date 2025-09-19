@@ -137,7 +137,7 @@ export default function Footer() {
 
             <li>
               <a
-                href="https://github.com/Nanditha-Prabhu/CampusConnect"
+                href="https://github.com/chetturuKhaleel1/campus-connect"
                 rel="noreferrer"
                 target="_blank"
                 className="text-gray-700 transition hover:text-gray-700/75 dark:text-white dark:hover:text-white/75"

@@ -33,9 +33,10 @@ const Forum = () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) return;
-      const res = await axios.get("/api/forum", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+     const res = await axios.get(
+  `${import.meta.env.VITE_API_URL}/forum`,
+  { headers: { Authorization: `Bearer ${token}` } }
+);
       setPosts(res.data);
     } catch (err) {
       console.error("Fetch posts error:", err);
@@ -44,7 +45,7 @@ const Forum = () => {
 
   const fetchProjects = async () => {
     try {
-      const res = await axios.get("/api/projects");
+     const res = await axios.get(`${import.meta.env.VITE_API_URL}/projects`);
       setProjects(res.data.projects || []);
     } catch (err) {
       console.error("Fetch projects error:", err);
@@ -60,11 +61,16 @@ const Forum = () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) return alert("Please login first.");
-      const res = await axios.post(
-        `/api/forum/vote/${postId}`,
-        { type, replyId },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+
+
+    const res = await axios.post(
+  `${import.meta.env.VITE_API_URL}/forum/vote/${postId}`,
+  { type, replyId },
+  { headers: { Authorization: `Bearer ${token}` } }
+);
+
+
+
       setPosts(posts.map((p) => (p._id === postId ? res.data.post : p)));
     } catch (err) {
       console.error("Voting error:", err);
@@ -76,11 +82,15 @@ const Forum = () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) return alert("Please login first.");
-      const res = await axios.post(
-        "/api/forum",
-        { ...newPost, tags: newPost.tags.split(",").map((t) => t.trim()) },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+
+const res = await axios.post(
+  `${import.meta.env.VITE_API_URL}/forum`,
+  { ...newPost, tags: newPost.tags.split(",").map((t) => t.trim()) },
+  { headers: { Authorization: `Bearer ${token}` } }
+);
+
+
+
       setPosts([res.data.post, ...posts]);
       setNewPost({ title: "", content: "", category: "Tech", tags: "" });
     } catch (err) {
@@ -93,11 +103,16 @@ const Forum = () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) return alert("Please login first.");
-      const res = await axios.post(
-        `/api/forum/reply/${postId}`,
-        { text: replyText[postId], parentReplyId },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+
+
+     const res = await axios.post(
+  `${import.meta.env.VITE_API_URL}/forum/reply/${postId}`,
+  { text: replyText[postId], parentReplyId },
+  { headers: { Authorization: `Bearer ${token}` } }
+);
+
+
+
       setPosts(posts.map((p) => (p._id === postId ? res.data.post : p)));
       setReplyText({ ...replyText, [postId]: "" });
     } catch (err) {

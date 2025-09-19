@@ -25,7 +25,8 @@ export default function FindStudents() {
 
   const applyAreaOfInterest = async () => {
     try {
-      const r = await axios.get("http://localhost:8080/all_areas");
+      const r = await axios.get(`${import.meta.env.VITE_API_URL}/all_areas`);
+
       setAreaOfInt(r.data);
       // console.log(r.data);
       // console.log(areaOfInt);
@@ -40,7 +41,8 @@ export default function FindStudents() {
 
   const applySkls = async () => {
     try {
-      const r = await axios.get("http://localhost:8080/all_skills");
+      const r = await axios.get(`${import.meta.env.VITE_API_URL}/all_skills`);
+
       setSkls(r.data);
       //console.log(r.data);
       //console.log(skls);
@@ -58,10 +60,8 @@ export default function FindStudents() {
     event.preventDefault();
 
     try {
-      const r = await axios.post(
-        "http://localhost:8080/find_students",
-        formData
-      );
+     const r = await axios.post(`${import.meta.env.VITE_API_URL}/find_students`, formData);
+
       // console.log(r.data);
       const data = r.data;
 

@@ -24,10 +24,11 @@ export default function FacultySignUp() {
     event.preventDefault();
 
     try {
-      const r = await axios.post(
-        "http://localhost:5000/api/faculty/signup", // ✅ new backend route
-        formData
-      );
+     const r = await axios.post(
+  `${import.meta.env.VITE_API_URL}/faculty/signup`, 
+  formData
+);
+
 
       if (r.data.success) {
         setResponse("Successful");

@@ -24,7 +24,10 @@ function KnowTeamMembers() {
     setIsLoading(true);
     event.preventDefault();
     try {
-      const r = await axios.post("http://localhost:8080/know-team", formData);
+      const r = await axios.post(
+  `${process.env.VITE_API_URL}/know-team`,
+  formData
+);
       //   r.then((response) => response.json())
       //   r.then((data) => setResponse(data));
 

@@ -33,7 +33,10 @@ export default function FindProjects() {
     setIsLoading(true);
 
     try {
-      const res = await axios.post("http://localhost:5000/api/projects/find", formData);
+     const res = await axios.post(
+  `${import.meta.env.VITE_API_URL}/projects/find`,
+  formData
+);
       setProjects(res.data);
     } catch (err) {
       console.error("Error fetching projects:", err);

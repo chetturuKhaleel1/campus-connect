@@ -8,7 +8,9 @@ export default function Announcements() {
 
   const fetchAnnouncements = async () => {
     try {
-      const res = await axios.get("/api/announcements");
+      const res = await axios.get(
+  `${import.meta.env.VITE_API_URL}/announcements`
+);
       setAnnouncements(res.data);
     } catch (err) {
       console.error("Error fetching announcements:", err);

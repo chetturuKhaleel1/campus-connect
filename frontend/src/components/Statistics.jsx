@@ -23,9 +23,12 @@ export default function Statistics() {
     const fetchStats = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:5000/api/stats", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+
+       const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/stats`, {
+  headers: { Authorization: `Bearer ${token}` },
+});
+
+
         setStats(res.data);
       } catch (err) {
         console.error("Error fetching statistics:", err);

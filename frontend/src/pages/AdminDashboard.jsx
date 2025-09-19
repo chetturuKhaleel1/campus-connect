@@ -14,6 +14,9 @@ import {
   ArrowUpCircle,
 } from "lucide-react";
 
+const baseURL = import.meta.env.VITE_API_URL;
+
+
 const sections = [
   { key: "announcements", label: "Announcements", icon: Megaphone },
   { key: "posts", label: "Forum Posts", icon: FileText },
@@ -41,9 +44,12 @@ export default function AdminDashboard() {
 
     setLoading(true);
     try {
-      const res = await axios.get(`/api/admin/${activeSection}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+
+     const res = await axios.get(`${baseURL}/api/admin/${activeSection}`, {
+  headers: { Authorization: `Bearer ${token}` },
+});
+
+
       const filtered = res.data.filter(item => !item.isDeleted);
       setData(filtered || []);
     } catch (err) {
@@ -71,13 +77,13 @@ export default function AdminDashboard() {
     try {
       const isSoftDelete = activeSection === "faculty" || activeSection === "students";
       if (isSoftDelete) {
-        await axios.patch(`/api/admin/${activeSection}/${id}/soft-delete`, {}, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+       await axios.patch(`${baseURL}/api/admin/${activeSection}/${id}/soft-delete`, {}, {
+  headers: { Authorization: `Bearer ${token}` },
+});
       } else {
-        await axios.delete(`/api/admin/${activeSection}/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+       await axios.delete(`${baseURL}/api/admin/${activeSection}/${id}`, {
+  headers: { Authorization: `Bearer ${token}` },
+});
       }
       setData(prev => prev.filter(item => item._id !== id));
     } catch (err) {
@@ -92,9 +98,9 @@ const handlePromote = async (id) => {
   if (!token) return;
 
   try {
-    await axios.post(`/api/admin/faculty/${id}/promote`, {}, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+   await axios.post(`${baseURL}/api/admin/faculty/${id}/promote`, {}, {
+  headers: { Authorization: `Bearer ${token}` },
+});
     alert("✅ Faculty promoted to Admin");
     fetchData(); // refresh list
   } catch (err) {
@@ -114,9 +120,12 @@ const handlePromote = async (id) => {
     }
 
     try {
-      const res = await axios.post("/api/admin/announcements", newAnnouncement, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+
+     const res = await axios.post(`${baseURL}/api/admin/announcements`, newAnnouncement, {
+  headers: { Authorization: `Bearer ${token}` },
+});
+
+
       setData(prev => [res.data, ...prev]);
       setNewAnnouncement({ title: "", content: "" });
     } catch (err) {
@@ -128,9 +137,10 @@ const handleDemote = async (id) => {
   const token = localStorage.getItem("token");
   if (!token) return;
   try {
-    await axios.post(`/api/admin/faculty/${id}/demote`, {}, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+   await axios.post(`${baseURL}/api/admin/faculty/${id}/demote`, {}, {
+  headers: { Authorization: `Bearer ${token}` },
+});
+
     alert("✅ Faculty demoted to normal faculty");
     fetchData(); // refresh list
   } catch (err) {
@@ -149,11 +159,13 @@ const handleDemote = async (id) => {
     }
 
     try {
-      const res = await axios.patch(
-        `/api/admin/announcements/${editingAnnouncement._id}`,
-        { title: editingAnnouncement.title, content: editingAnnouncement.content },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+
+     const res = await axios.patch(
+  `${baseURL}/api/admin/announcements/${editingAnnouncement._id}`,
+  { title: editingAnnouncement.title, content: editingAnnouncement.content },
+  { headers: { Authorization: `Bearer ${token}` } }
+);
+
       setData(prev => prev.map(a => (a._id === res.data._id ? res.data : a)));
       setEditingAnnouncement(null);
     } catch (err) {

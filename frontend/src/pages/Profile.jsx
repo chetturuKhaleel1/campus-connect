@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
 import MyProjects from "../components/MyProjects";
 
+const baseURL = import.meta.env.VITE_API_URL; 
 export default function Profile() {
   const { user, setUser } = useContext(AuthContext);
 
@@ -39,21 +40,16 @@ useEffect(() => {
     if (!token) return;
 
     try {
-      const [postsRes, eventsRes, projectsRes] = await Promise.all([
-        fetch("http://localhost:5000/api/forum/my-posts", {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-        fetch("http://localhost:5000/api/events/my-events", {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-        fetch("http://localhost:5000/api/projects/my-projects", {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-      ]);
+     const [postsRes, eventsRes, projectsRes] = await Promise.all([
+  fetch(`${baseURL}/api/forum/my-posts`, { headers: { Authorization: `Bearer ${token}` } }),
+  fetch(`${baseURL}/api/events/my-events`, { headers: { Authorization: `Bearer ${token}` } }),
+  fetch(`${baseURL}/api/projects/my-projects`, { headers: { Authorization: `Bearer ${token}` } }),
+]);
 
-      const postsData = await postsRes.json();
-      const eventsData = await eventsRes.json();
-      const projectsData = await projectsRes.json();
+     const postsData = postsRes.ok ? await postsRes.json() : [];
+const eventsData = eventsRes.ok ? await eventsRes.json() : [];
+const projectsData = projectsRes.ok ? await projectsRes.json() : [];
+
 
       if (postsRes.ok) setMyPosts(postsData.posts || []);
       if (eventsRes.ok) setMyEvents(eventsData || []);
@@ -74,9 +70,12 @@ useEffect(() => {
     if (!token) return;
 
     try {
-      const res = await fetch("http://localhost:5000/api/profile/me", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+
+
+     const res = await fetch(`${baseURL}/api/profile/me`, {
+  headers: { Authorization: `Bearer ${token}` },
+});
+
       const data = await res.json();
 
      if (res.ok) {
@@ -129,14 +128,15 @@ const updateProject = async (id) => {
 };
 
 
-    const res = await fetch(`http://localhost:5000/api/projects/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(payload),
-    });
+   const res = await fetch(`${baseURL}/api/projects/${id}`, {
+  method: "PUT",
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
+  },
+  body: JSON.stringify(payload),
+});
+
 
     if (!res.ok) {
       const errData = await res.json();
@@ -147,9 +147,9 @@ const updateProject = async (id) => {
     setEditingProject(null);
 
     // Refresh projects list
-    const refreshed = await fetch("http://localhost:5000/api/projects/my-projects", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+   const refreshed = await fetch(`${baseURL}/api/projects/my-projects`, {
+  headers: { Authorization: `Bearer ${token}` },
+});
     const refreshedData = await refreshed.json();
     setMyProjects(refreshedData.projects || []);
   } catch (err) {
@@ -160,7 +160,7 @@ const updateProject = async (id) => {
 // Delete a project
 const deleteProject = async (id) => {
   try {
-    await fetch(`http://localhost:5000/api/projects/${id}`, {
+    await fetch(`${baseURL}/api/projects/${id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -190,7 +190,7 @@ const deleteProject = async (id) => {
       skills: formData.skills || undefined,
     };
 
-   const res = await fetch("http://localhost:5000/api/profile/me", {
+   const res = await fetch(`${baseURL}/profile/me`, {
 
       method: "PUT",
       headers: {
@@ -226,15 +226,15 @@ const deleteProject = async (id) => {
         category: editingPost.category,
         tags: editingPost.tags,
       };
+const res = await fetch(`${baseURL}/forum/${id}`, {
+  method: "PUT",
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
+  },
+  body: JSON.stringify(payload),
+});
 
-      const res = await fetch(`http://localhost:5000/api/forum/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      });
 
       if (!res.ok) {
         const errData = await res.json();
@@ -242,7 +242,7 @@ const deleteProject = async (id) => {
         return;
       }
 setEditingPost(null);
-const refreshed = await fetch("http://localhost:5000/api/forum/my-posts", {
+const refreshed = await fetch(`${baseURL}/forum/my-posts`, {
   headers: { Authorization: `Bearer ${token}` },
 });
 const refreshedData = await refreshed.json();
@@ -252,18 +252,18 @@ setMyPosts(refreshedData.posts || []); // ✅ correct shape
       console.error(err);
     }
   };
+const deletePost = async (id) => {
+  try {
+    await fetch(`${baseURL}/forum/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    setMyPosts(myPosts.filter((p) => p._id !== id));
+  } catch (err) {
+    console.error(err);
+  }
+};
 
-  const deletePost = async (id) => {
-    try {
-      await fetch(`http://localhost:5000/api/forum/${id}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setMyPosts(myPosts.filter((p) => p._id !== id));
-    } catch (err) {
-      console.error(err);
-    }
-  };
 
   // --- EVENTS handlers ---
   const updateEvent = async (id) => {
@@ -275,7 +275,7 @@ setMyPosts(refreshedData.posts || []); // ✅ correct shape
         location: editingEvent.location,
       };
 
-      const res = await fetch(`http://localhost:5000/api/events/${id}`, {
+       const res = await fetch(`${baseURL}/events/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -291,7 +291,7 @@ setMyPosts(refreshedData.posts || []); // ✅ correct shape
       }
 
       setEditingEvent(null);
-      const refreshed = await fetch("http://localhost:5000/api/events/my-events", {
+      const refreshed = await fetch(`${baseURL}/events/my-events`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setMyEvents(await refreshed.json());
@@ -302,7 +302,7 @@ setMyPosts(refreshedData.posts || []); // ✅ correct shape
 
   const deleteEvent = async (id) => {
     try {
-      await fetch(`http://localhost:5000/api/events/${id}`, {
+      await fetch(`${baseURL}/events/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });

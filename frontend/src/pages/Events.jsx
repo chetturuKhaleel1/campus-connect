@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Star } from "lucide-react";
 import { motion } from "framer-motion";
-
+const baseURL = import.meta.env.VITE_API_URL;
 const Events = () => {
   const [events, setEvents] = useState([]);
   const [newEvent, setNewEvent] = useState({
@@ -19,9 +19,9 @@ const Events = () => {
   // Fetch events
   const fetchEvents = async () => {
     try {
-      const res = await axios.get("/api/events", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+    const res = await axios.get(`${baseURL}/api/events`, {
+  headers: { Authorization: `Bearer ${token}` },
+});
       setEvents(res.data);
     } catch (err) {
       console.error("Fetch events error:", err);
@@ -38,9 +38,9 @@ const Events = () => {
       return alert("Fill all required fields!");
     }
     try {
-      const res = await axios.post("/api/events", newEvent, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+     const res = await axios.post(`${baseURL}/api/events`, newEvent, {
+  headers: { Authorization: `Bearer ${token}` },
+});
       setEvents([res.data.event, ...events]);
       setNewEvent({
         title: "",
@@ -57,11 +57,13 @@ const Events = () => {
   // Toggle interest
   const toggleInterest = async (eventId) => {
     try {
-      const res = await axios.post(
-        `/api/events/interest/${eventId}`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+
+     
+const res = await axios.post(
+  `${baseURL}/api/events/interest/${eventId}`,
+  {},
+  { headers: { Authorization: `Bearer ${token}` } }
+);
       setEvents(events.map((ev) => (ev._id === eventId ? res.data.event : ev)));
     } catch (err) {
       console.error("Toggle interest error:", err);

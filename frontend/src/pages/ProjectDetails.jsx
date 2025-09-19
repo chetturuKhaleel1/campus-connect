@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Loading from "../components/Loading";
-
+const baseURL = import.meta.env.VITE_API_URL;
 export default function ProjectDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -13,9 +13,9 @@ export default function ProjectDetails() {
     const fetchProject = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get(`http://localhost:5000/api/projects/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+       const res = await axios.get(`${baseURL}/api/projects/${id}`, {
+  headers: { Authorization: `Bearer ${token}` },
+});
         setProject(res.data.project);
       } catch (err) {
         console.error("Error fetching project:", err);

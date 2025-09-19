@@ -63,10 +63,13 @@ export default function StudentSignUp() {
 
     try {
       const payload = { ...formData, sem: Number(formData.sem) };
-      const res = await axios.post(
-        "http://localhost:5000/api/create_student",
-        payload
-      );
+
+
+    const res = await axios.post(
+  `${import.meta.env.VITE_API_URL}/api/create_student`,
+  payload
+);
+
 
       if (res.data.success) {
         setResponse("🎉 Student registered successfully!");

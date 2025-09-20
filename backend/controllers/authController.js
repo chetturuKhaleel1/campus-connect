@@ -1,11 +1,12 @@
 import Faculty from "../models/Faculty.js";
 import Student from "../models/Student.js";
-import Admin from "../models/Admin.js"; // ✅ add admin model
+import Admin from "../models/Admin.js"; // add admin model
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 export const login = async (req, res) => {
   const { email, password } = req.body;
+  console.log(`Login attempt for email: ${email}`);
 
   try {
     // Try admin first
@@ -14,20 +15,26 @@ export const login = async (req, res) => {
 
     if (!user) {
       // Try faculty
-      user = await Faculty.findOne({ email_id: email });
+      user = await Faculty.findOne({ email: email });
       role = "faculty";
     }
 
     if (!user) {
       // Try student
-      user = await Student.findOne({ email_id: email });
+      user = await Student.findOne({ email: email });
       role = "student";
     }
 
-    if (!user) return res.status(400).json({ message: "User not found" });
+    if (!user) {
+      console.log("User not found for email:", email);
+      return res.status(400).json({ message: "User not found" });
+    }
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ message: "Invalid password" });
+    if (!isMatch) {
+      console.log("Invalid password for email:", email);
+      return res.status(400).json({ message: "Invalid password" });
+    }
 
     // JWT token
     const token = jwt.sign(
@@ -36,7 +43,7 @@ export const login = async (req, res) => {
       { expiresIn: "7d" }
     );
 
-    // Send user info (omit password)
+    // Prepare user data for response (omit password)
     const userData =
       role === "admin"
         ? { id: user._id, name: user.name, email: user.email }
@@ -44,14 +51,14 @@ export const login = async (req, res) => {
         ? {
             id: user._id,
             name: user.name,
-            email_id: user.email_id,
+            email: user.email,
             department: user.department,
             designation: user.designation,
           }
         : {
             id: user._id,
             student_name: user.student_name,
-            email_id: user.email_id,
+            email: user.email,
             rollno: user.rollno,
             department: user.department,
             area_of_int1: user.area_of_int1,
@@ -60,9 +67,11 @@ export const login = async (req, res) => {
             sem: user.sem,
           };
 
+    console.log(`Successful login for ${role} with email: ${email}`);
+
     res.json({ token, user: { ...userData, role } });
   } catch (err) {
-    console.error(err);
+    console.error("Login error:", err);
     res.status(500).json({ message: err.message });
   }
 };

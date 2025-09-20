@@ -113,19 +113,19 @@ router.post("/faculty/:id/promote", adminMiddleware, async (req, res) => {
     if (!faculty) return res.status(404).json({ message: "Faculty not found" });
 
     // validate presence of required fields
-    if (!faculty.name || !faculty.email_id) {
+    if (!faculty.name || !faculty.email) {
       return res.status(400).json({ message: "Faculty missing name or email" });
     }
 
     // check if already admin
-    const existingAdmin = await Admin.findOne({ email: faculty.email_id });
+    const existingAdmin = await Admin.findOne({ email: faculty.email});
     if (existingAdmin)
       return res.status(400).json({ message: "Already an admin" });
 
     // create new admin
     const admin = new Admin({
       name: faculty.name,
-      email: faculty.email_id,
+      email: faculty.email,
       password: faculty.password, // keep hashed password
       role: "admin",
     });
@@ -151,7 +151,7 @@ router.post("/faculty/:id/demote", adminMiddleware, async (req, res) => {
     if (!faculty) return res.status(404).json({ message: "Faculty not found" });
 
     // check if they are currently admin
-    const admin = await Admin.findOne({ email: faculty.email_id });
+    const admin = await Admin.findOne({ email: faculty.email});
     if (!admin)
       return res.status(400).json({ message: "This faculty is not an admin" });
 

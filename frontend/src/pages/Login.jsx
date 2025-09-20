@@ -2,57 +2,60 @@
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
-import { jwtDecode } from "jwt-decode";
+
+
+
 const baseURL = import.meta.env.VITE_API_URL;
 const Login = () => {
   const { setUser } = useContext(AuthContext);
   const navigate = useNavigate();
+ const [formData, setFormData] = useState({ email: "", password: "" });
 
-  const [formData, setFormData] = useState({ email: "", password: "" });
+
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError("");
+  setLoading(true);
 
-    try {
-      const res = await fetch(`${baseURL}/api/login`, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify(formData),
-});
+  try {
+    const res = await fetch(`${baseURL}/api/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: formData.email,
+        password: formData.password
+      }),
+    });
 
-      const data = await res.json();
+    const data = await res.json();
 
-      if (res.ok) {
-        localStorage.setItem("token", data.token);
-        const decoded = jwtDecode(data.token);
+   if (res.ok) {
+  localStorage.setItem("token", data.token);
+  setUser(data.user);
 
-       const profileRes = await fetch(`${baseURL}/api/profile/me`, {
-  headers: { Authorization: `Bearer ${data.token}` },
-});
+  if (data.user.role === "admin") {
+    navigate("/admin/dashboard"); // admin goes to dashboard
+  } else {
+    navigate("/"); // everyone else goes home
+  }
+} else {
+  setError(data.message || "Login failed");
+}
 
-        const profileData = await profileRes.json();
-        if (profileRes.ok) setUser(profileData.profile);
-        else setUser(decoded);
+  } catch (err) {
+    console.error(err);
+    setError("Something went wrong!");
+  } finally {
+    setLoading(false);
+  }
+};
 
-        if (decoded.role === "admin") navigate("/admin/dashboard");
-        else navigate("/");
-      } else {
-        setError(data.message || "Login failed");
-      }
-    } catch (err) {
-      console.error(err);
-      setError("Something went wrong!");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="relative h-screen flex items-center justify-center">
@@ -90,8 +93,8 @@ const Login = () => {
             <input
               id="email"
               type="email"
-              name="email"
-              value={formData.email}
+            name="email"           // ✅ must match backend
+  value={formData.email}  // ✅ match updated state
               onChange={handleChange}
               required
               className="w-full px-4 py-3 rounded-lg bg-gray-800 border border-gray-700 text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500"

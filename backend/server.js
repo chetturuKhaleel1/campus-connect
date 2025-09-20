@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
+// import jwt from "jsonwebtoken";
 
 import Student from "./models/Student.js";
 import Faculty from "./models/Faculty.js"; 
@@ -19,7 +19,7 @@ import profileRoutes from "./routes/profile.js";
 import adminRoutes from "./routes/admin.js";
 import adminAnnouncementsRoutes from "./routes/adminAnnouncements.js";
 import publicAnnouncementsRouter from "./routes/publicAnnouncements.js";
-import Admin from "./models/Admin.js";
+// import Admin from "./models/Admin.js";
 
 dotenv.config();
 const app = express();
@@ -30,7 +30,7 @@ app.use(express.json());
 
 // Routes
 app.use("/api/events", eventsRoutes);
-app.use("/api/faculty", facultyRoutes);
+// app.use("/api/faculty", facultyRoutes);
 app.use("/api", authRoutes);
 app.use("/api/forum", forumRoutes);
 app.use("/api/projects", projectRoutes);
@@ -52,7 +52,7 @@ app.post("/api/create_student", async (req, res) => {
     const {
       student_name,
       rollno,
-      email_id,
+      email,
       department,
       area_of_int1,
       area_of_int2,
@@ -61,7 +61,7 @@ app.post("/api/create_student", async (req, res) => {
       password,
     } = req.body;
 
-    const existingStudent = await Student.findOne({ email_id });
+    const existingStudent = await Student.findOne({ email});
     if (existingStudent) {
       return res.status(400).json({ success: false, message: "Email already registered" });
     }
@@ -71,7 +71,7 @@ app.post("/api/create_student", async (req, res) => {
     const newStudent = new Student({
       student_name,
       rollno,
-      email_id,
+      email,
       department,
       area_of_int1,
       area_of_int2,
@@ -91,6 +91,46 @@ app.post("/api/create_student", async (req, res) => {
     res.status(400).json({ success: false, message: err.message });
   }
 });
+
+
+
+//facluty signup route
+// --- Faculty Signup ---
+app.post("/api/create_faculty", async (req, res) => {
+  try {
+    const { name, email, password, department, designation } = req.body;
+
+    const existingFaculty = await Faculty.findOne({ email });
+    if (existingFaculty) {
+      return res.status(400).json({ success: false, message: "Email already registered" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newFaculty = new Faculty({
+      name,
+      email,
+      password: hashedPassword,
+      department,
+      designation,
+    });
+
+    await newFaculty.save();
+
+    res.status(201).json({
+      success: true,
+      message: "Faculty registered successfully 🎉",
+      faculty: newFaculty,
+    });
+  } catch (err) {
+    res.status(400).json({ success: false, message: err.message });
+  }
+});
+
+
+
+
+
 //use postman to crate a admin and then delete this route
 // --- Admin Creation (Temporary) ---
 // // --- Admin Creation (Temporary) ---
@@ -133,7 +173,13 @@ app.post("/api/create_student", async (req, res) => {
 // });
 
 
+
+
+
 // --- Profile Update ---
+
+
+
 app.put("/api/profile/update", async (req, res) => {
   try {
     const {
@@ -153,7 +199,7 @@ app.put("/api/profile/update", async (req, res) => {
     let role = "student";
 
     if (!user) {
-      user = await Faculty.findOne({ email_id: email });
+      user = await Faculty.findOne({ email: email });
       role = "faculty";
     }
 

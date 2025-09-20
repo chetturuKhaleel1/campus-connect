@@ -69,25 +69,39 @@ router.put("/me", authMiddleware, async (req, res) => {
 
     let user;
     if (role === "faculty") {
-      user = await Faculty.findByIdAndUpdate(id, updates, {
-        new: true,
-        runValidators: true,
-      }).select("-password");
+      user = await Faculty.findById(id);
     } else if (role === "student") {
-      user = await Student.findByIdAndUpdate(id, updates, {
-        new: true,
-        runValidators: true,
-      }).select("-password");
+      user = await Student.findById(id);
     }
 
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    res.json({ success: true, user });
+    // Update fields dynamically (except password)
+    for (let key in updates) {
+      if (key !== "password" && updates[key] !== undefined) {
+        user[key] = updates[key];
+      }
+    }
+
+    // Hash password if provided
+    if (updates.password) {
+      const salt = await bcrypt.genSalt(10);
+      user.password = await bcrypt.hash(updates.password, salt);
+    }
+
+    await user.save();
+
+    // Exclude password in response
+    const userObj = user.toObject();
+    delete userObj.password;
+
+    res.json({ success: true, user: userObj });
   } catch (err) {
     console.error("Profile update error:", err);
     res.status(500).json({ message: "Server error" });
   }
 });
+
 
 /* ------------------------- Forum: My Posts ------------------------- */
 router.get("/my-posts", authMiddleware, async (req, res) => {

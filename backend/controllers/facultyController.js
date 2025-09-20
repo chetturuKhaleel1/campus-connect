@@ -1,75 +1,59 @@
 import Faculty from "../models/Faculty.js";
-import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
-// 🎓 Faculty Signup
-export const registerFaculty = async (req, res) => {
+// Signup
+export const signupFaculty = async (req, res) => {
   try {
-    const { name, email_id, password, department, designation } = req.body;
+    console.log("Body received:", req.body); // <--- log the request body
 
-    // check if faculty already exists
-    const existingFaculty = await Faculty.findOne({ email_id });
-    if (existingFaculty) {
+    const { name, email, department, designation, password } = req.body;
+
+    const existing = await Faculty.findOne({ email });
+    if (existing) {
+      console.log("Duplicate email:", email);
       return res.status(400).json({ message: "Faculty already registered" });
     }
 
-    // hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // create new faculty
-    const faculty = new Faculty({
+    const newFaculty = new Faculty({
       name,
-      email_id,
-      password: hashedPassword,
+      email,
       department,
       designation,
+      password: hashedPassword,
     });
 
-    await faculty.save();
-
-    res.status(201).json({
-      success: true,
-      message: "Faculty registered successfully",
-    });
+    await newFaculty.save();
+    console.log("Faculty saved:", newFaculty);
+    res.status(201).json({ message: "Faculty registered successfully" });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error("Signup error:", err);  // <--- log full error
+    res.status(500).json({ message: "Error registering faculty", error: err.message });
   }
 };
 
-// 🎓 Faculty Login
+// Login
 export const loginFaculty = async (req, res) => {
   try {
-    const { email_id, password } = req.body;
+    const { email, password } = req.body;
 
-    const faculty = await Faculty.findOne({ email_id });
-    if (!faculty) {
-      return res.status(400).json({ message: "Invalid email or password" });
-    }
+    const faculty = await Faculty.findOne({ email });
+    if (!faculty) return res.status(400).json({ message: "Invalid credentials" });
 
     const isMatch = await bcrypt.compare(password, faculty.password);
-    if (!isMatch) {
-      return res.status(400).json({ message: "Invalid email or password" });
-    }
+    if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
 
-    // generate JWT
-    const token = jwt.sign(
-      { id: faculty._id, role: "faculty" },
-      process.env.JWT_SECRET,
-      { expiresIn: "7d" }
-    );
+    const token = jwt.sign({ id: faculty._id }, process.env.JWT_SECRET, { expiresIn: "1d" });
 
-    res.json({
-      success: true,
-      token,
-      faculty: {
-        id: faculty._id,
-        name: faculty.name,
-        email_id: faculty.email_id,
-        department: faculty.department,
-        designation: faculty.designation,
-      },
-    });
+    res.json({ message: "Login successful", token });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ message: "Error logging in", error: err.message });
   }
+};
+
+// Logout
+export const logoutFaculty = async (req, res) => {
+  res.json({ message: "Logout successful" });
 };

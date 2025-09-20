@@ -3,6 +3,7 @@ import { ArrowRight } from "lucide-react";
 import axios from "axios";
 import Loading from "./Loading";
 
+const baseURL = import.meta.env.VITE_API_URL; 
 export default function StudentSignUp() {
   const [areaOfInt, setAreaOfInt] = useState([]);
   const [skillsList, setSkillsList] = useState([
@@ -20,7 +21,7 @@ export default function StudentSignUp() {
   const [formData, setFormData] = useState({
     student_name: "",
     rollno: "",
-    email_id: "",
+   email: "",
     department: "",
     area_of_int1: "",
     area_of_int2: "",
@@ -62,11 +63,21 @@ export default function StudentSignUp() {
     setResponse("");
 
     try {
-      const payload = { ...formData, sem: Number(formData.sem) };
+     const payload = {
+  student_name: formData.student_name,
+  rollno: formData.rollno,
+  email: formData.email,  // <-- map email_id to email for backend
+  department: formData.department,
+  area_of_int1: formData.area_of_int1,
+  area_of_int2: formData.area_of_int2,
+  sem: Number(formData.sem),
+  skills: formData.skills,
+  password: formData.password,
+};
 
 
     const res = await axios.post(
-  `${import.meta.env.VITE_API_URL}/api/create_student`,
+  `${baseURL}/api/create_student`,
   payload
 );
 
@@ -76,7 +87,7 @@ export default function StudentSignUp() {
         setFormData({
           student_name: "",
           rollno: "",
-          email_id: "",
+          email: "",
           department: "",
           area_of_int1: "",
           area_of_int2: "",
@@ -140,8 +151,8 @@ export default function StudentSignUp() {
               <input
                 required
                 type="email"
-                name="email_id"
-                value={formData.email_id}
+                name="email"
+                value={formData.email}
                 onChange={handleChange}
                 className="flex h-10 w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400"
                 placeholder="Email"

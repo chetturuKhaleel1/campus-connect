@@ -96,15 +96,20 @@ export default function AdminDashboard() {
 const handlePromote = async (id) => {
   const token = localStorage.getItem("token");
   if (!token) return;
-
   try {
-   await axios.post(`${baseURL}/api/admin/faculty/${id}/promote`, {}, {
-  headers: { Authorization: `Bearer ${token}` },
-});
+    await axios.post(`${baseURL}/api/admin/faculty/${id}/promote`, {}, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    // Update UI immediately
+    setData(prev =>
+      prev.map(fac => fac._id === id ? { ...fac, isAdmin: true } : fac)
+    );
+
     alert("✅ Faculty promoted to Admin");
-    fetchData(); // refresh list
   } catch (err) {
     console.error("Error promoting:", err);
+    alert(err.response?.data?.message || "Failed to promote");
   }
 };
 
@@ -137,14 +142,19 @@ const handleDemote = async (id) => {
   const token = localStorage.getItem("token");
   if (!token) return;
   try {
-   await axios.post(`${baseURL}/api/admin/faculty/${id}/demote`, {}, {
-  headers: { Authorization: `Bearer ${token}` },
-});
+    await axios.post(`${baseURL}/api/admin/faculty/${id}/demote`, {}, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    // Update UI immediately
+    setData(prev =>
+      prev.map(fac => fac._id === id ? { ...fac, isAdmin: false } : fac)
+    );
 
     alert("✅ Faculty demoted to normal faculty");
-    fetchData(); // refresh list
   } catch (err) {
     console.error("Error demoting:", err);
+    alert(err.response?.data?.message || "Failed to demote");
   }
 };
 
@@ -313,7 +323,7 @@ const handleDemote = async (id) => {
   <>
     <h3 className="text-lg font-semibold text-gray-800">{item.student_name || "Untitled"}</h3>
     <p className="text-gray-700 mt-1">Department: {item.department || "N/A"}</p>
-    <p className="text-gray-700 mt-1">Email: {item.email_id || "N/A"}</p>
+    <p className="text-gray-700 mt-1">Email: {item.email || "N/A"}</p>
     
   </>
 )}
@@ -331,7 +341,7 @@ const handleDemote = async (id) => {
 
     </h3>
     <p className="text-gray-700 mt-1">Department: {item.department || "N/A"}</p>
-    <p className="text-gray-700 mt-1">Email: {item.email_id || "N/A"}</p>
+    <p className="text-gray-700 mt-1">Email: {item.email || "N/A"}</p>
   </>
 )}
 

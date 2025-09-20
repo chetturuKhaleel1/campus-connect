@@ -190,7 +190,7 @@ const deleteProject = async (id) => {
       skills: formData.skills || undefined,
     };
 
-   const res = await fetch(`${baseURL}/profile/me`, {
+   const res = await fetch(`${baseURL}/api/profile/me`, {
 
       method: "PUT",
       headers: {
@@ -243,7 +243,7 @@ const res = await fetch(`${baseURL}/api/forum/${id}`, {
         return;
       }
 setEditingPost(null);
-const refreshed = await fetch(`${baseURL}/forum/my-posts`, {
+const refreshed = await fetch(`${baseURL}/api/forum/my-posts`, {
   headers: { Authorization: `Bearer ${token}` },
 });
 const refreshedData = await refreshed.json();
@@ -255,7 +255,7 @@ setMyPosts(refreshedData.posts || []); // ✅ correct shape
   };
 const deletePost = async (id) => {
   try {
-    await fetch(`${baseURL}/forum/${id}`, {
+    await fetch(`${baseURL}/api/forum/${id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -276,7 +276,7 @@ const deletePost = async (id) => {
         location: editingEvent.location,
       };
 
-       const res = await fetch(`${baseURL}/events/${id}`, {
+       const res = await fetch(`${baseURL}/api/events/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -292,7 +292,7 @@ const deletePost = async (id) => {
       }
 
       setEditingEvent(null);
-      const refreshed = await fetch(`${baseURL}/events/my-events`, {
+      const refreshed = await fetch(`${baseURL}/api/events/my-events`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setMyEvents(await refreshed.json());
@@ -303,7 +303,7 @@ const deletePost = async (id) => {
 
   const deleteEvent = async (id) => {
     try {
-      await fetch(`${baseURL}/events/${id}`, {
+      await fetch(`${baseURL}/api/events/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { Megaphone } from "lucide-react";
+const baseURL = import.meta.env.VITE_API_URL;
 
 export default function Announcements() {
   const [announcements, setAnnouncements] = useState([]);
@@ -9,7 +10,7 @@ export default function Announcements() {
   const fetchAnnouncements = async () => {
     try {
       const res = await axios.get(
-  `${import.meta.env.VITE_API_URL}/announcements`
+  `${baseURL}/api/announcements`
 );
       setAnnouncements(res.data);
     } catch (err) {

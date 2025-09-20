@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { ArrowRight } from "lucide-react";
 import axios from "axios";
 import Loading from "./Loading";
-
+const baseURL = import.meta.env.VITE_API_URL;
 export default function FacultySignUp() {
   const [formData, setFormData] = useState({
     name: "",
@@ -25,7 +25,7 @@ export default function FacultySignUp() {
 
     try {
      const r = await axios.post(
-  `${import.meta.env.VITE_API_URL}/faculty/signup`, 
+  `${baseURL}/api/faculty/signup`, 
   formData
 );
 

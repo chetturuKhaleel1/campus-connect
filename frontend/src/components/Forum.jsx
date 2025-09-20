@@ -11,6 +11,7 @@ import {
 import Events from "../pages/Events";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
+const baseURL = import.meta.env.VITE_API_URL;
 
 const categories = ["All", "Tech", "Freelancers", "Events", "Campus", "Projects"];
 
@@ -34,7 +35,7 @@ const Forum = () => {
       const token = localStorage.getItem("token");
       if (!token) return;
      const res = await axios.get(
-  `${import.meta.env.VITE_API_URL}/forum`,
+  `${baseURL}/api/forum`,
   { headers: { Authorization: `Bearer ${token}` } }
 );
       setPosts(res.data);
@@ -42,15 +43,15 @@ const Forum = () => {
       console.error("Fetch posts error:", err);
     }
   };
+const fetchProjects = async () => {
+  try {
+    const res = await axios.get(`${baseURL}/api/projects`);
+    setProjects(res.data.projects || []);
+  } catch (err) {
+    console.error("Fetch projects error:", err);
+  }
+};
 
-  const fetchProjects = async () => {
-    try {
-     const res = await axios.get(`${import.meta.env.VITE_API_URL}/projects`);
-      setProjects(res.data.projects || []);
-    } catch (err) {
-      console.error("Fetch projects error:", err);
-    }
-  };
 
   useEffect(() => {
     fetchPosts();
@@ -64,7 +65,7 @@ const Forum = () => {
 
 
     const res = await axios.post(
-  `${import.meta.env.VITE_API_URL}/forum/vote/${postId}`,
+  `${baseURL}/api/forum/vote/${postId}`,
   { type, replyId },
   { headers: { Authorization: `Bearer ${token}` } }
 );
@@ -84,7 +85,7 @@ const Forum = () => {
       if (!token) return alert("Please login first.");
 
 const res = await axios.post(
-  `${import.meta.env.VITE_API_URL}/forum`,
+  `${baseURL}/api/forum`,
   { ...newPost, tags: newPost.tags.split(",").map((t) => t.trim()) },
   { headers: { Authorization: `Bearer ${token}` } }
 );
@@ -106,7 +107,7 @@ const res = await axios.post(
 
 
      const res = await axios.post(
-  `${import.meta.env.VITE_API_URL}/forum/reply/${postId}`,
+  `${baseURL}/api/forum/reply/${postId}`,
   { text: replyText[postId], parentReplyId },
   { headers: { Authorization: `Bearer ${token}` } }
 );

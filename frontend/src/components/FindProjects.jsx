@@ -34,7 +34,7 @@ export default function FindProjects() {
 
     try {
      const res = await axios.post(
-  `${import.meta.env.VITE_API_URL}/projects/find`,
+  `${import.meta.env.VITE_API_URL}/api/projects/find`,
   formData
 );
       setProjects(res.data);

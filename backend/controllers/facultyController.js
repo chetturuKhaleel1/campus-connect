@@ -13,10 +13,14 @@ export const registerFaculty = async (req, res) => {
       return res.status(400).json({ message: "Faculty already registered" });
     }
 
+    // hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // create new faculty
     const faculty = new Faculty({
       name,
       email_id,
-      password,
+      password: hashedPassword,
       department,
       designation,
     });

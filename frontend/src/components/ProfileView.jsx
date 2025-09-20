@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { User, FileText, FolderKanban } from "lucide-react";
-
+const baseURL = import.meta.env.VITE_API_URL;
 export default function ProfileView() {
   const { role, id } = useParams();
   const [profileData, setProfileData] = useState(null);
@@ -17,7 +17,7 @@ export default function ProfileView() {
       try {
 
        const res = await axios.get(
-  `${process.env.VITE_API_URL}/api/profile/${role}/${id}`
+  `${baseURL}/api/profile/${role}/${id}`
 );
 
         setProfileData(res.data);
